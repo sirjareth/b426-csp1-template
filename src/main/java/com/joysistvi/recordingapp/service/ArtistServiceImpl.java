@@ -15,8 +15,21 @@ public class ArtistServiceImpl implements ArtistService{
         this.artistRepository = artistRepository;
     }
 
+    @Override
     public List<Artist> getAllActiveArtists() {
-        return  artistRepository.findAllActive();
+        return artistRepository.findAllActive();
+    }
+
+    @Override
+    public boolean createArtist(String name){
+        // Guard Clause
+        if (name == null || name.trim().isEmpty()) {
+            System.out.println("\nValidation Error: Artist name is required.");
+            return false;
+        }
+
+        Artist artist = new Artist(name);
+        return artistRepository.save(artist);
     }
 
 }

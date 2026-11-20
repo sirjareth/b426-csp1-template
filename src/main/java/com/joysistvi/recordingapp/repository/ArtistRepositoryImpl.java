@@ -3,10 +3,7 @@ package com.joysistvi.recordingapp.repository;
 import com.joysistvi.recordingapp.config.DbConnection;
 import com.joysistvi.recordingapp.model.Artist;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +40,26 @@ public class ArtistRepositoryImpl implements ArtistRepository{
         }
 
         return artists;
+    }
+
+    @Override
+    public boolean save(Artist artists) {
+
+        String query = "INSERT INTO artists (name) VALUES (?)";
+
+        try (Connection connection = dbConnection.connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, artists.getName().trim());
+
+            return preparedStatement.executeUpdate() > 0;
+
+            //System.out.println("\nArtist: " + artists.getName().trim() + " created successfully!");
+
+        } catch (SQLException e) {
+            System.out.println("\nCreate Artist Error: " + e.getMessage());
+            return false;
+        }
     }
 
 }

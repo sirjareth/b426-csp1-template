@@ -8,4 +8,5 @@ import java.util.List;
 public interface ArtistRepository {
 
     public List<Artist> findAllActive();
+    public boolean save(Artist artists);
 }
