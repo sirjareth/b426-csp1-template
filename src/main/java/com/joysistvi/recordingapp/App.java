@@ -1,6 +1,7 @@
 package com.joysistvi.recordingapp;
 
 import com.joysistvi.recordingapp.config.DbConnection;
+import com.joysistvi.recordingapp.model.User;
 import com.joysistvi.recordingapp.repository.*;
 import com.joysistvi.recordingapp.service.*;
 import com.joysistvi.recordingapp.view.AlbumView;
@@ -12,55 +13,87 @@ import java.util.Scanner;
 // Entry Point
 public class App {
 
+    DbConnection dbConnection = new DbConnection();
+    Scanner scanner = new Scanner(System.in);
+    // Wiring
+    // 1. Wire Artist (Repository -> Service -> View)
+    ArtistRepository artistRepository = new ArtistRepositoryImpl(dbConnection);
+    ArtistService artistService = new ArtistServiceImpl(artistRepository);
+    ArtistView artistView = new ArtistView(artistService, scanner);
+
+    // 2. Wire Album (Repository -> Service -> View)
+    AlbumRepository albumRepository = new AlbumRepositoryImpl(dbConnection);
+    AlbumService albumService = new AlbumServiceImpl(albumRepository);
+    AlbumView albumView = new AlbumView(albumService, scanner);
+
+    // 3. Wire User (Repository -> Service -> View)
+    UserRepository userRepository = new UserRepositoryImpl(dbConnection);
+    UserService userService = new UserServiceImpl(userRepository);
+    UserView userView = new UserView(userService, scanner);
+
     public static void main(String[] args) {
-        DbConnection dbConnection = new DbConnection();
-        Scanner scanner = new Scanner(System.in);
-        // Wiring
-        // 1. Wire Artist (Repository -> Service -> View)
-        ArtistRepository artistRepository = new ArtistRepositoryImpl(dbConnection);
-        ArtistService artistService = new ArtistServiceImpl(artistRepository);
-        ArtistView artistView = new ArtistView(artistService, scanner);
+        App app = new App();
+        app.run();
 
-        // 2. Wire Album (Repository -> Service -> View)
-        AlbumRepository albumRepository = new AlbumRepositoryImpl(dbConnection);
-        AlbumService albumService = new AlbumServiceImpl(albumRepository);
-        AlbumView albumView = new AlbumView(albumService, scanner);
+    }
 
-        // 3. Wire User (Repository -> Service -> View)
-        UserRepository userRepository = new UserRepositoryImpl(dbConnection);
-        UserService userService = new UserServiceImpl(userRepository);
-        UserView userView = new UserView(userService, scanner);
+    public void run() {
 
-        // Artist flow: Read, Create, Search, Update, Archive, Restore, Delete
-//        artistView.displayAllArtists();
-//        artistView.promptCreateArtist();
-//        artistView.promptSearchArtists();
-//        artistView.promptUpdateArtist();
-//        artistView.promptArchiveArtist();
-//        artistView.promptRestoreArtist();
-//        artistView.promptDeleteArtist();
-//
-//        // Album flow: Read, Create, Search, Update, Archive, Restore, Delete
-        albumView.displayAllAlbums();
-//        albumView.promptCreateAlbum();
-//        albumView.promptSearchAlbums();
-//        albumView.promptUpdateAlbum();
-//        albumView.promptArchiveAlbum();
-//        albumView.promptRestoreAlbum();
-//        albumView.promptDeleteAlbum();
-//
-//        // User flow: Register/Create, Login, Read, Search, Update, Archive, Restore, Delete
-//        userView.promptCreateUser();
-//        userView.promptLogin();
-        userView.displayAllUsers();
-//        userView.promptSearchUsers();
-//        userView.promptUpdateUser();
-//        userView.promptArchiveUser();
-//        userView.promptRestoreUser();
-//        userView.promptDeleteUser();
+        while (true) {
+            User currentUser = showAuthMenuAndAuthenticate();
+            if (currentUser == null) {
+                System.out.println("\nExiting Recording Studio App. Goodbye!");
+                break;
+            }
 
-        scanner.close();
+            // Any logged-in user enter the album menu
+            System.out.println("\nWelcome, " + currentUser.getUsername() + " (" + currentUser.getRole() + ")!");
+            albumView.handleAlbumMenu();
+            System.out.println("\nLogged out " + currentUser.getUsername() + ".");
+        }
+    }
 
+    private User showAuthMenuAndAuthenticate() {
+
+        while (true) {
+            System.out.println("\n=== RECORDING STUDIO APP ===");
+            System.out.println("1. Login");
+            System.out.println("2. Register Account");
+            System.out.println("0. Exit");
+
+            int choice = promptForInt("Choose an option: ");
+            switch (choice) {
+                case 1:
+                    User loggedInUser = userView.promptLogin();
+
+                    if (loggedInUser != null ) {
+                        return loggedInUser;
+                    }
+                    break;
+
+                case 2:
+                    userView.promptCreateUser();
+                    break;
+                case 0:
+                    return null;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+                    break;
+            }
+        }
+    }
+
+
+    private int promptForInt(String promptMessage) {
+        while (true) {
+            System.out.print(promptMessage);
+            String input = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+            }
+        }
     }
 }
 
@@ -69,8 +102,12 @@ public class App {
 
 /*
 ===============================================================================
-                             Dependency Wiring
+                             Build &  Wiring Order (Bottom-Up)
 ===============================================================================
+
+    Model
+    │
+    ▼
     Repository
      │
      ▼
@@ -80,14 +117,14 @@ public class App {
     View
      │
      ▼
-    Main Application
+    Main Application (App)
 
     /*
 ===============================================================================
-DATA FLOW
+                    DATA FLOW (Top-Down)
 ===============================================================================
 
-REQUEST FLOW (Save / Insert / Update)
+REQUEST FLOW (Save / Insert / Update / Delete)
 
 User/App
   ↓

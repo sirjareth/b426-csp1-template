@@ -14,6 +14,34 @@ public class AlbumView {
         this.scanner = scanner;
     }
 
+    public void handleAlbumMenu() {
+        while (true) {
+            System.out.println("\n=== MANAGE ALBUMS ===");
+            System.out.println("1. View All Albums");
+            System.out.println("2. Create Album");
+            System.out.println("3. Update Album");
+            System.out.println("4. Search Album");
+            System.out.println("5. Archive Album");
+            System.out.println("6. Restore Album");
+            System.out.println("7. Delete Album");
+            System.out.println("0. Back");
+
+            int choice = promptForInt("Choose an option: ");
+            switch (choice) {
+                case 1 -> displayAllAlbums();
+                case 2 -> promptCreateAlbum();
+                case 3 -> promptUpdateAlbum();
+                case 4 -> promptSearchAlbums();
+                case 5 -> promptArchiveAlbum();
+                case 6 -> promptRestoreAlbum();
+                case 7 -> promptDeleteAlbum();
+                case 0 -> { return; }
+                default -> System.out.println("Invalid option. Please try again.");
+
+            }
+        }
+    }
+
     public void displayAllAlbums() {
         printAlbumTable("\n----- Active Albums -----", albumService.getAllActiveAlbums(), "No active albums found.");
     }
