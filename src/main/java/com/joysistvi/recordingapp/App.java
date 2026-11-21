@@ -48,8 +48,26 @@ public class App {
 
             // Any logged-in user enter the album menu
             System.out.println("\nWelcome, " + currentUser.getUsername() + " (" + currentUser.getRole() + ")!");
-            albumView.handleAlbumMenu();
+            dashBoard();
             System.out.println("\nLogged out " + currentUser.getUsername() + ".");
+        }
+    }
+
+    // Authorization vs Authentication
+    private void dashboard(){
+        System.out.println("1. Song Management");
+        System.out.println("2. Artist Management");
+        System.out.println("3. Album Management");
+        System.out.println("4. Users Management");
+        System.out.println("0. Back");
+
+        int choice = promptForInt("Choice: ");
+        switch (choice) {
+             //case 1 -> handleSongMenu();
+             //case 2 -> handleArtistMenu();
+             case 3 -> albumView.handleAlbumMenu();
+             //case 4 -> handleUserMenu();
+             case 0 -> {return;}
         }
     }
 
