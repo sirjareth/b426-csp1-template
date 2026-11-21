@@ -2,13 +2,10 @@ package com.joysistvi.recordingapp.service;
 
 import com.joysistvi.recordingapp.model.Artist;
 import com.joysistvi.recordingapp.repository.ArtistRepository;
-
+import java.util.ArrayList;
 import java.util.List;
 
-
-// Application Tier: Business Rule / Validation
-public class ArtistServiceImpl implements ArtistService{
-
+public class ArtistServiceImpl implements ArtistService {
     private final ArtistRepository artistRepository;
 
     public ArtistServiceImpl(ArtistRepository artistRepository) {
@@ -21,15 +18,66 @@ public class ArtistServiceImpl implements ArtistService{
     }
 
     @Override
-    public boolean createArtist(String name){
-        // Guard Clause
-        if (name == null || name.trim().isEmpty()) {
-            System.out.println("\nValidation Error: Artist name is required.");
-            return false;
-        }
-
-        Artist artist = new Artist(name);
-        return artistRepository.save(artist);
+    public List<Artist> getAllArchivedArtists() {
+        return artistRepository.findAllArchived();
     }
 
+    @Override
+    public boolean createArtist(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            System.out.println("Validation Error: Artist name cannot be blank.");
+            return false;
+        }
+        return artistRepository.save(new Artist(name.trim()));
+    }
+
+    @Override
+    public boolean updateArtist(int id, String name) {
+        if (id <= 0) {
+            System.out.println("Validation Error: Artist ID must be greater than 0.");
+            return false;
+        }
+        if (name == null || name.trim().isEmpty()) {
+            System.out.println("Validation Error: Artist name cannot be blank.");
+            return false;
+        }
+        Artist updated = new Artist(id, name.trim());
+        return artistRepository.update(updated);
+    }
+
+    @Override
+    public boolean deleteArtist(int id) {
+        if (id <= 0) {
+            System.out.println("Validation Error: Artist ID must be greater than 0.");
+            return false;
+        }
+        return artistRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean archiveArtist(int id) {
+        if (id <= 0) {
+            System.out.println("Validation Error: Artist ID must be greater than 0.");
+            return false;
+        }
+        return artistRepository.archiveById(id);
+    }
+
+    @Override
+    public boolean restoreArtist(int id) {
+        if (id <= 0) {
+            System.out.println("Validation Error: Artist ID must be greater than 0.");
+            return false;
+        }
+        return artistRepository.restoreById(id);
+    }
+
+    @Override
+    public List<Artist> searchArtists(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            System.out.println("Validation Error: Search keyword cannot be blank.");
+            return new ArrayList<>();
+        }
+        return artistRepository.searchByName(keyword.trim());
+    }
 }
