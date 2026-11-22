@@ -14,6 +14,50 @@ public class ArtistView {
         this.scanner = scanner;
     }
 
+    public void handleMenu() {
+        while (true) {
+            System.out.println("\n=== ARTIST MANAGEMENT ===");
+            System.out.println("1. View All Active Artists");
+            System.out.println("2. Create Artist");
+            System.out.println("3. Update Artist");
+            System.out.println("4. Search Artists");
+            System.out.println("5. Archive Artist");
+            System.out.println("6. Restore Artist");
+            System.out.println("7. Delete Artist");
+            System.out.println("0. Back");
+
+            int choice = promptForInt("Choose an option: ");
+            switch (choice) {
+                case 1:
+                    displayAllArtists();
+                    break;
+                case 2:
+                    promptCreateArtist();
+                    break;
+                case 3:
+                    promptUpdateArtist();
+                    break;
+                case 4:
+                    promptSearchArtists();
+                    break;
+                case 5:
+                    promptArchiveArtist();
+                    break;
+                case 6:
+                    promptRestoreArtist();
+                    break;
+                case 7:
+                    promptDeleteArtist();
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+                    break;
+            }
+        }
+    }
+
     public void displayAllArtists() {
         printArtistTable("\n----- Active Artists -----", artistService.getAllActiveArtists(), "No active artists found.");
     }
