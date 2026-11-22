@@ -4,9 +4,7 @@ import com.joysistvi.recordingapp.config.DbConnection;
 import com.joysistvi.recordingapp.model.User;
 import com.joysistvi.recordingapp.repository.*;
 import com.joysistvi.recordingapp.service.*;
-import com.joysistvi.recordingapp.view.AlbumView;
-import com.joysistvi.recordingapp.view.ArtistView;
-import com.joysistvi.recordingapp.view.UserView;
+import com.joysistvi.recordingapp.view.*;
 
 import java.util.Scanner;
 
@@ -31,6 +29,14 @@ public class App {
     UserService userService = new UserServiceImpl(userRepository);
     UserView userView = new UserView(userService, scanner);
 
+    SongRepository songRepository = new SongRepositoryImpl(dbConnection);
+    SongService songService = new SongServiceImpl(songRepository);
+    SongView songView = new SongView(songService, scanner);
+
+    PlaylistRepository playlistRepository = new PlaylistRepositoryImpl(dbConnection);
+    PlaylistService playlistService = new PlaylistServiceImpl(playlistRepository);
+    PlaylistView playlistView = new PlaylistView(playlistService, scanner);
+
     public static void main(String[] args) {
         App app = new App();
         app.run();
@@ -48,7 +54,7 @@ public class App {
 
             // Any logged-in user enter the album menu
             System.out.println("\nWelcome, " + currentUser.getUsername() + " (" + currentUser.getRole() + ")!");
-            dashBoard();
+            dashboard();
             System.out.println("\nLogged out " + currentUser.getUsername() + ".");
         }
     }
@@ -63,10 +69,10 @@ public class App {
 
         int choice = promptForInt("Choice: ");
         switch (choice) {
-             //case 1 -> handleSongMenu();
-             //case 2 -> handleArtistMenu();
+             case 1 -> songView.handleMenu();
+             case 2 -> artistView.handleMenu();
              case 3 -> albumView.handleAlbumMenu();
-             //case 4 -> handleUserMenu();
+             case 4 -> playlistView.handleMenu();
              case 0 -> {return;}
         }
     }
