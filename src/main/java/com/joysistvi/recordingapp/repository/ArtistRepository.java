@@ -15,5 +15,5 @@ public interface ArtistRepository {
     boolean archiveById(int id);
     boolean restoreById(int id);
     List<Artist> searchByName(String keyword);
-    Artist findById(int id);
+    Artist findById(int id); // additional method
 }

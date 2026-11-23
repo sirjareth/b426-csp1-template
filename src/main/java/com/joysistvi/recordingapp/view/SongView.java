@@ -59,7 +59,7 @@ public class SongView {
     }
 
     public void displayAllSongs() {
-        printSongTable("----- Active Songs -----", songService.getAllActiveSongs());
+        printSongListTable("----- Active Songs -----", songService.getAllActiveSongs());
     }
 
     public void promptCreateSong() {
@@ -101,7 +101,7 @@ public class SongView {
         System.out.println("\n--- Search Songs ---");
         System.out.print("Enter keyword: ");
         String keyword = scanner.nextLine();
-        printSongTable("----- Search Results -----", songService.searchSongs(keyword));
+        printSongListTable("----- Search Results -----", songService.searchSongs(keyword));
     }
 
     public void promptArchiveSong() {
@@ -121,7 +121,7 @@ public class SongView {
             System.out.println("No archived songs found.");
             return;
         }
-        printSongTable("----- Archived Songs -----", archived);
+        printSongListTable("----- Archived Songs -----", archived);
         int id = promptForInt("Enter song ID to restore: ");
         if (songService.restoreSong(id)) {
             System.out.println("Song restored successfully.");
@@ -140,37 +140,35 @@ public class SongView {
         }
     }
 
-    private void printSongTable(String header, List<Song> songs, String emptyMessage) {
-        String border = "+------+---------------------------+------------+----------+";
+    private void printSongListTable(String header, List<Song> songs) {
+        String border = "+-------+------------------------+-----------------+----------+----------------------+";
 
         System.out.println("\n" + header);
         System.out.println(border);
-        System.out.printf("| %-4s | %-25s | %-10s | %-8s |%n", "ID", "Song Title", "Length", "Album ID");
+        System.out.printf("| %-5s | %-22s | %-15s | %-8s | %-20s |%n",
+                "ID", "Title", "Genre", "Length", "Album");
         System.out.println(border);
 
         if (songs == null || songs.isEmpty()) {
-            String message = (emptyMessage != null && !emptyMessage.isEmpty())
-                    ? emptyMessage
-                    : "No songs found.";
-            System.out.printf("| %-56s |%n", truncate(message, 56));
+            System.out.printf("| %-84s |%n", truncate("No songs found.", 84));
             System.out.println(border);
             return;
         }
 
-        for (Song song : songs) {
-            String title = song.getTitle() != null ? song.getTitle() : "";
-            System.out.printf("| %-4d | %-25s | %-10d | %-8d |%n",
-                    song.getId(),
-                    truncate(title, 25),
-                    song.getLength(),
-                    song.getAlbumId());
+        for (Song s : songs) {
+            String title = s.getTitle() != null ? s.getTitle() : "";
+            String genre = s.getGenre() != null ? s.getGenre() : "";
+            String album = s.getAlbumName() != null ? s.getAlbumName() : "";
+
+            System.out.printf("| %-5d | %-22s | %-15s | %-8s | %-20s |%n",
+                    s.getId(),
+                    truncate(title, 22),
+                    truncate(genre, 15),
+                    s.getLength(),
+                    truncate(album, 20));
         }
 
         System.out.println(border);
-    }
-
-    private void printSongTable(String header, List<Song> songs) {
-        printSongTable(header, songs, "No songs found.");
     }
 
     private String truncate(String text, int maxLength) {
@@ -185,6 +183,7 @@ public class SongView {
         }
         return text.substring(0, maxLength - 3) + "...";
     }
+
 
     private int promptForInt(String promptMessage) {
         while (true) {

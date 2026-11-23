@@ -78,7 +78,7 @@ public class ArtistView {
     public void promptUpdateArtist() {
         System.out.println("\n=== UPDATE Artist ===");
         displayAllArtists();
-        int id = promptForInt("Enter artist ID to update: ");
+        int id = promptForInt("Enter artist ID to update: "); // 16
 
         Artist current = artistService.getArtistById(id);
 
@@ -88,7 +88,7 @@ public class ArtistView {
         }
 
 
-        System.out.print("Enter new artist name (press Enter to keep current [Jareth]):");
+        System.out.print("Enter new artist name (press Enter to keep current [" + current.getName() + "]):");
         String name = scanner.nextLine();
 
         if (name.trim().isEmpty()) {

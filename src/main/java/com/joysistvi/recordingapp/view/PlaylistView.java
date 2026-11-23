@@ -114,7 +114,7 @@ public class PlaylistView {
             int choice = promptForInt("Choose an option: ");
             switch (choice) {
                 case 1:
-                    printAvailableSongsTable("----- Available Songs -----", songService.getAllActiveSongs());
+                    printSongListTable("----- Available Songs -----", songService.getAllActiveSongs());
                     int addSongId = promptForInt("Enter song ID to add: ");
                     if (playlistService.addSongToPlaylist(playlist.getId(), addSongId)) {
                         System.out.println("Song added to playlist.");
@@ -140,9 +140,7 @@ public class PlaylistView {
         }
     }
 
-    private void printAvailableSongsTable(String header, List<Song> songs) {
-        printSongListTable(header, songs);
-    }
+
 
     private void printSongListTable(String header, List<Song> songs) {
         String border = "+-------+------------------------+-----------------+----------+----------------------+";
@@ -164,7 +162,7 @@ public class PlaylistView {
             String genre = s.getGenre() != null ? s.getGenre() : "";
             String album = s.getAlbumName() != null ? s.getAlbumName() : "";
 
-            System.out.printf("| %-5d | %-22s | %-15s | %-8d | %-20s |%n",
+            System.out.printf("| %-5d | %-22s | %-15s | %-8s | %-20s |%n",
                     s.getId(),
                     truncate(title, 22),
                     truncate(genre, 15),
