@@ -80,4 +80,15 @@ public class ArtistServiceImpl implements ArtistService {
         }
         return artistRepository.searchByName(keyword.trim());
     }
+
+    @Override
+    public Artist getArtistById(int id) {
+
+        if (id <= 0) {
+            System.out.println("Validation Error: Artist Id must be greater than 0");
+            return null;
+        }
+
+        return artistRepository.findById(id);
+    }
 }

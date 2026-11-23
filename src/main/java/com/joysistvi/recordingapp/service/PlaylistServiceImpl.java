@@ -1,7 +1,10 @@
 package com.joysistvi.recordingapp.service;
 
 import com.joysistvi.recordingapp.model.Playlist;
+import com.joysistvi.recordingapp.model.Song;
 import com.joysistvi.recordingapp.repository.PlaylistRepository;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +25,8 @@ public class PlaylistServiceImpl implements PlaylistService {
         return playlistRepository.findAllArchived();
     }
 
+
+    // Use findByUserId
     @Override
     public List<Playlist> getPlaylistsByUser(int userId) {
         if (userId <= 0) {
@@ -31,6 +36,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         return playlistRepository.findByUserId(userId);
     }
 
+    // Used findByUserId
     @Override
     public boolean createPlaylist(String name, int userId) {
         if (name == null || name.trim().isEmpty()) {
@@ -39,6 +45,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
         if (userId <= 0) {
             System.out.println("Validation Error: User ID must be positive.");
+            return false;
+        }
+
+        if (!playlistRepository.findByUserId(userId).isEmpty()) {
+            System.out.println("Validation Error: User already has a playlist.");
             return false;
         }
         return playlistRepository.save(new Playlist(0, name.trim(), userId, null));
@@ -95,5 +106,50 @@ public class PlaylistServiceImpl implements PlaylistService {
             return Collections.emptyList();
         }
         return playlistRepository.searchByName(keyword.trim());
+    }
+
+
+
+    // Used findSongsByPlaylistId
+    @Override
+    public List<Song> getSongsInPlaylist(int playlistId) {
+        if (playlistId <= 0) {
+            System.out.println("Validation Error: Playlist ID must be positive.");
+            return new ArrayList<>();
+        }
+
+
+        List<Song> results = playlistRepository.findSongsByPlaylistId(playlistId);
+        if (results != null) {
+            return results;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public boolean addSongToPlaylist(int playlistId, int songId) {
+        if (playlistId <= 0) {
+            System.out.println("Validation Error: Playlist ID must be positive.");
+            return false;
+        }
+        if (songId <= 0) {
+            System.out.println("Validation Error: Song ID must be positive.");
+            return false;
+        }
+        return playlistRepository.addSongToPlaylist(playlistId, songId);
+    }
+
+    @Override
+    public boolean removeSongFromPlaylist(int playlistId, int songId) {
+        if (playlistId <= 0) {
+            System.out.println("Validation Error: Playlist ID must be positive.");
+            return false;
+        }
+        if (songId <= 0) {
+            System.out.println("Validation Error: Song ID must be positive.");
+            return false;
+        }
+        return playlistRepository.removeSongFromPlaylist(playlistId, songId);
     }
 }

@@ -3,7 +3,8 @@ package com.joysistvi.recordingapp.model;
 public class Song {
     private int id;
     private String title;
-    private int durationSeconds;
+    private String genre;
+    private String length;
     private int albumId;
     private String albumName;
     private boolean archived;
@@ -11,18 +12,20 @@ public class Song {
     public Song() {
     }
 
-    public Song(int id, String title, int durationSeconds, int albumId, String albumName) {
+    public Song(int id, String title, String genre, String length, int albumId, String albumName) {
         this.id = id;
         this.title = title;
-        this.durationSeconds = durationSeconds;
+        this.genre = genre;
+        this.length = length;
         this.albumId = albumId;
         this.albumName = albumName;
     }
 
-    public Song(int id, String title, int durationSeconds, int albumId, String albumName, boolean archived) {
+    public Song(int id, String title, String genre, String length, int albumId, String albumName, boolean archived) {
         this.id = id;
         this.title = title;
-        this.durationSeconds = durationSeconds;
+        this.genre = genre;
+        this.length = length;
         this.albumId = albumId;
         this.albumName = albumName;
         this.archived = archived;
@@ -44,12 +47,20 @@ public class Song {
         this.title = title;
     }
 
-    public int getDurationSeconds() {
-        return durationSeconds;
+    public String getGenre() {
+        return genre;
     }
 
-    public void setDurationSeconds(int durationSeconds) {
-        this.durationSeconds = durationSeconds;
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
     }
 
     public int getAlbumId() {

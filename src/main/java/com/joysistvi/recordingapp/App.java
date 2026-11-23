@@ -35,7 +35,7 @@ public class App {
 
     PlaylistRepository playlistRepository = new PlaylistRepositoryImpl(dbConnection);
     PlaylistService playlistService = new PlaylistServiceImpl(playlistRepository);
-    PlaylistView playlistView = new PlaylistView(playlistService, scanner);
+    PlaylistView playlistView = new PlaylistView(playlistService, songService, scanner);
 
     public static void main(String[] args) {
         App app = new App();
@@ -69,11 +69,12 @@ public class App {
 
         int choice = promptForInt("Choice: ");
         switch (choice) {
-             case 1 -> songView.handleMenu();
-             case 2 -> artistView.handleMenu();
-             case 3 -> albumView.handleAlbumMenu();
-             case 4 -> playlistView.handleMenu();
-             case 0 -> {return;}
+            case 1 -> songView.handleMenu();
+            case 2 -> artistView.handleMenu();
+            case 3 -> albumView.handleMenu();
+            case 4 -> albumView.handleMenu();
+            //case 5 -> playlistView.handleMenu();
+            case 0 -> {return;}
         }
     }
 

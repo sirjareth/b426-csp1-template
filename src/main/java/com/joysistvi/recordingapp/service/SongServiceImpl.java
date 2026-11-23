@@ -2,6 +2,8 @@ package com.joysistvi.recordingapp.service;
 
 import com.joysistvi.recordingapp.model.Song;
 import com.joysistvi.recordingapp.repository.SongRepository;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,41 +25,23 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public boolean createSong(String title, int durationSeconds, int albumId) {
-        if (title == null || title.trim().isEmpty()) {
-            System.out.println("Validation Error: Song title cannot be blank.");
+    public boolean createSong(String title, String genre, String length, int albumId) {
+        if (!isValidSongInput(title, genre, length, albumId)) {
             return false;
         }
-        if (durationSeconds <= 0) {
-            System.out.println("Validation Error: Duration must be greater than 0 seconds.");
-            return false;
-        }
-        if (albumId <= 0) {
-            System.out.println("Validation Error: Album ID must be positive.");
-            return false;
-        }
-        return songRepository.save(new Song(0, title.trim(), durationSeconds, albumId, null));
+        return songRepository.save(new Song(0, title.trim(), genre.trim(), length.trim(), albumId, null));
     }
 
     @Override
-    public boolean updateSong(int id, String title, int durationSeconds, int albumId) {
+    public boolean updateSong(int id, String title, String genre, String length, int albumId) {
         if (id <= 0) {
             System.out.println("Validation Error: Song ID must be positive.");
             return false;
         }
-        if (title == null || title.trim().isEmpty()) {
-            System.out.println("Validation Error: Song title cannot be blank.");
+        if (!isValidSongInput(title, genre, length, albumId)) {
             return false;
         }
-        if (durationSeconds <= 0) {
-            System.out.println("Validation Error: Duration must be greater than 0 seconds.");
-            return false;
-        }
-        if (albumId <= 0) {
-            System.out.println("Validation Error: Album ID must be positive.");
-            return false;
-        }
-        return songRepository.update(new Song(id, title.trim(), durationSeconds, albumId, null));
+        return songRepository.update(new Song(id, title.trim(), genre.trim(), length.trim(), albumId, null));
     }
 
     @Override
@@ -91,8 +75,34 @@ public class SongServiceImpl implements SongService {
     public List<Song> searchSongs(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             System.out.println("Validation Error: Search keyword cannot be blank.");
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
-        return songRepository.searchByTitle(keyword.trim());
+
+        List<Song> results = songRepository.searchByTitle(keyword.trim());
+        if (results != null) {
+            return results;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private boolean isValidSongInput(String title, String genre, String length, int albumId) {
+        if (title == null || title.trim().isEmpty()) {
+            System.out.println("Validation Error: Song title cannot be blank.");
+            return false;
+        }
+        if (genre == null || genre.trim().isEmpty()) {
+            System.out.println("Validation Error: Genre cannot be blank.");
+            return false;
+        }
+        if (length == null || length.trim().isEmpty()) {
+            System.out.println("Validation Error: Song length cannot be blank.");
+            return false;
+        }
+        if (albumId <= 0) {
+            System.out.println("Validation Error: Album ID must be positive.");
+            return false;
+        }
+        return true;
     }
 }

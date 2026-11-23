@@ -79,14 +79,34 @@ public class ArtistView {
         System.out.println("\n=== UPDATE Artist ===");
         displayAllArtists();
         int id = promptForInt("Enter artist ID to update: ");
-        System.out.print("Enter new artist name: ");
+
+        Artist current = artistService.getArtistById(id);
+
+        if (current == null) {
+            System.out.println("Artist not found or invalid ID.");
+            return;
+        }
+
+
+        System.out.print("Enter new artist name (press Enter to keep current [Jareth]):");
         String name = scanner.nextLine();
+
+        if (name.trim().isEmpty()) {
+            name = current.getName();
+        } else {
+            name = name.trim();
+        }
 
         boolean updated = artistService.updateArtist(id, name);
         if (updated) {
-            System.out.println("Artist ID " + id + " updated successfully!");
+            System.out.println("Artist updated successfully!");
         } else {
             System.out.println("No artist updated (check ID or input).");
+        }
+
+        if (updated) {
+            System.out.println();
+            displayAllArtists();
         }
     }
 
@@ -144,18 +164,44 @@ public class ArtistView {
                 matches, "No matching active artists found.");
     }
 
+
+
     private void printArtistTable(String header, List<Artist> artists, String emptyMessage) {
-        System.out.println(header);
-        System.out.printf("%-4s %-25s%n", "ID", "Artist Name");
+        String border = "+------+---------------------------+";
+
+        System.out.println("\n" + header);
+        System.out.println(border);
+        System.out.printf("| %-4s | %-25s |%n", "ID", "Artist Name");
+        System.out.println(border);
 
         if (artists == null || artists.isEmpty()) {
-            System.out.println(emptyMessage);
+            String message = (emptyMessage != null && !emptyMessage.isEmpty())
+                    ? emptyMessage
+                    : "No artists found.";
+            System.out.printf("| %-32s |%n", truncate(message, 32));
+            System.out.println(border);
             return;
         }
 
         for (Artist artist : artists) {
-            System.out.printf("%-4d %-25s%n", artist.getId(), artist.getName());
+            String name = artist.getName() != null ? artist.getName() : "";
+            System.out.printf("| %-4d | %-25s |%n", artist.getId(), truncate(name, 25));
         }
+
+        System.out.println(border);
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null) {
+            return "";
+        }
+        if (text.length() <= maxLength) {
+            return text;
+        }
+        if (maxLength <= 3) {
+            return text.substring(0, maxLength);
+        }
+        return text.substring(0, maxLength - 3) + "...";
     }
 
     private int promptForInt(String promptMessage) {

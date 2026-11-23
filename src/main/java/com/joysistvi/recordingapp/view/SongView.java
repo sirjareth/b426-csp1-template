@@ -66,10 +66,13 @@ public class SongView {
         System.out.println("\n--- Create Song ---");
         System.out.print("Enter song title: ");
         String title = scanner.nextLine();
-        int duration = promptForInt("Enter duration (seconds): ");
+        System.out.print("Enter genre: ");
+        String genre = scanner.nextLine();
+        System.out.print("Enter length (e.g. 3:45): ");
+        String length = scanner.nextLine();
         int albumId = promptForInt("Enter album ID: ");
 
-        if (songService.createSong(title, duration, albumId)) {
+        if (songService.createSong(title, genre, length, albumId)) {
             System.out.println("Song created successfully.");
         } else {
             System.out.println("Failed to create song.");
@@ -81,10 +84,13 @@ public class SongView {
         int id = promptForInt("Enter song ID to update: ");
         System.out.print("Enter new song title: ");
         String title = scanner.nextLine();
-        int duration = promptForInt("Enter new duration (seconds): ");
+        System.out.print("Enter new genre: ");
+        String genre = scanner.nextLine();
+        System.out.print("Enter new length (e.g. 3:45): ");
+        String length = scanner.nextLine();
         int albumId = promptForInt("Enter new album ID: ");
 
-        if (songService.updateSong(id, title, duration, albumId)) {
+        if (songService.updateSong(id, title, genre, length, albumId)) {
             System.out.println("Song updated successfully.");
         } else {
             System.out.println("Failed to update song.");
@@ -134,17 +140,50 @@ public class SongView {
         }
     }
 
-    private void printSongTable(String header, List<Song> songs) {
+    private void printSongTable(String header, List<Song> songs, String emptyMessage) {
+        String border = "+------+---------------------------+------------+----------+";
+
         System.out.println("\n" + header);
-        System.out.printf("%-5s %-25s %-12s %-20s%n", "ID", "Title", "Duration(s)", "Album");
+        System.out.println(border);
+        System.out.printf("| %-4s | %-25s | %-10s | %-8s |%n", "ID", "Song Title", "Length", "Album ID");
+        System.out.println(border);
+
         if (songs == null || songs.isEmpty()) {
-            System.out.println("No songs found.");
+            String message = (emptyMessage != null && !emptyMessage.isEmpty())
+                    ? emptyMessage
+                    : "No songs found.";
+            System.out.printf("| %-56s |%n", truncate(message, 56));
+            System.out.println(border);
             return;
         }
-        for (Song s : songs) {
-            System.out.printf("%-5d %-25s %-12d %-20s%n",
-                    s.getId(), s.getTitle(), s.getDurationSeconds(), s.getAlbumName());
+
+        for (Song song : songs) {
+            String title = song.getTitle() != null ? song.getTitle() : "";
+            System.out.printf("| %-4d | %-25s | %-10d | %-8d |%n",
+                    song.getId(),
+                    truncate(title, 25),
+                    song.getLength(),
+                    song.getAlbumId());
         }
+
+        System.out.println(border);
+    }
+
+    private void printSongTable(String header, List<Song> songs) {
+        printSongTable(header, songs, "No songs found.");
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null) {
+            return "";
+        }
+        if (text.length() <= maxLength) {
+            return text;
+        }
+        if (maxLength <= 3) {
+            return text.substring(0, maxLength);
+        }
+        return text.substring(0, maxLength - 3) + "...";
     }
 
     private int promptForInt(String promptMessage) {
