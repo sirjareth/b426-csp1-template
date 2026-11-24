@@ -13,6 +13,49 @@ public class UserView {
         this.userService = userService;
         this.scanner = scanner;
     }
+    public void handleMenu() {
+        while (true) {
+            System.out.println("\n=== USERS MANAGEMENT ===");
+            System.out.println("1. View All Active Users");
+            System.out.println("2. Create User");
+            System.out.println("3. Update User");
+            System.out.println("4. Search Users");
+            System.out.println("5. Archive User");
+            System.out.println("6. Restore User");
+            System.out.println("7. Delete User");
+            System.out.println("0. Back");
+
+            int choice = promptForInt("Choose an option: ");
+            switch (choice) {
+                case 1:
+                    displayAllUsers();
+                    break;
+                case 2:
+                    promptCreateUser();
+                    break;
+                case 3:
+                    promptUpdateUser();
+                    break;
+                case 4:
+                    promptSearchUsers();
+                    break;
+                case 5:
+                    promptArchiveUser();
+                    break;
+                case 6:
+                    promptRestoreUser();
+                    break;
+                case 7:
+                    promptDeleteUser();
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+                    break;
+            }
+        }
+    }
 
     public User promptLogin() {
         System.out.println("\n=== LOGIN ===");
@@ -124,21 +167,48 @@ public class UserView {
     }
 
     private void printUserTable(String header, List<User> users, String emptyMessage) {
-        System.out.println(header);
-        System.out.printf("%-4s %-18s %-26s %-10s%n", "ID", "Username", "Email", "Role");
+        String border = "+------+--------------------+----------------------------+------------+";
+
+        System.out.println("\n" + header);
+        System.out.println(border);
+        System.out.printf("| %-4s | %-18s | %-26s | %-10s |%n", "ID", "Username", "Email", "Role");
+        System.out.println(border);
 
         if (users == null || users.isEmpty()) {
-            System.out.println(emptyMessage);
+            String message = (emptyMessage != null && !emptyMessage.isEmpty())
+                    ? emptyMessage
+                    : "No users found.";
+            System.out.printf("| %-67s |%n", truncate(message, 67));
+            System.out.println(border);
             return;
         }
 
         for (User user : users) {
-            System.out.printf("%-4d %-18s %-26s %-10s%n",
+            String username = user.getUsername() != null ? user.getUsername() : "";
+            String email = user.getEmail() != null ? user.getEmail() : "";
+            String role = user.getRole() != null ? user.getRole() : "";
+
+            System.out.printf("| %-4d | %-18s | %-26s | %-10s |%n",
                     user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRole());
+                    truncate(username, 18),
+                    truncate(email, 26),
+                    truncate(role, 10));
         }
+
+        System.out.println(border);
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null) {
+            return "";
+        }
+        if (text.length() <= maxLength) {
+            return text;
+        }
+        if (maxLength <= 3) {
+            return text.substring(0, maxLength);
+        }
+        return text.substring(0, maxLength - 3) + "...";
     }
 
     private int promptForInt(String promptMessage) {

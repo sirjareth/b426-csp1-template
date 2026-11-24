@@ -159,4 +159,28 @@ public class ArtistRepositoryImpl implements ArtistRepository {
         }
         return artists;
     }
+
+    @Override
+    public Artist findById(int id) {
+
+        String query = "SELECT * FROM artists WHERE id = ? and is_archived = 0";
+
+        try (Connection conn = dbConnection.connect();
+            PreparedStatement prep = conn.prepareStatement(query)){
+
+            prep.setInt(1, id);
+
+
+            try (ResultSet res = prep.executeQuery()) {
+                if (res.next()) {
+                    return new Artist(res.getInt("id"),
+                            res.getString("name"));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Repository Error(findyById): " + e.getMessage());
+        }
+
+        return null;
+    }
 }
